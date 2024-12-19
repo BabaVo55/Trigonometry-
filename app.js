@@ -1,7 +1,7 @@
 const myCanvas = document.getElementById('canvas')
 const ctx = myCanvas.getContext("2d")
 
-
+//Global Variables
 
 const A = {
     x : 0,
@@ -28,14 +28,17 @@ const offset = {
     x:myCanvas.width/2,
     y:myCanvas.height/2
 }
+
+///             --------------------------
+
 ctx.translate(offset.x, offset.y)
 
-drawPoint(A,A, 20, color.B)
-drawPoint(B,B, 10, color.C)
-drawPoint(C,C, 5, color.A)
+
 
 update()
 
+
+//Update is run again on every movement
 document.onmousemove=(event)=>{
     B.y = event.y - offset.y
     B.x = event.x - offset.x
@@ -44,43 +47,76 @@ document.onmousemove=(event)=>{
     update()
 }
 
+///  -------------------------
+
 function update(){
+
+    const a = distance(B,C);
+    const b = distance(A,C);
+    const c = distance(A,B);
+
+    // const sin=a/c;
+    const theta = Math.asin(Sin(a,c))
+    
     ctx.clearRect(-offset.x, -offset.y,
         myCanvas.width, myCanvas.height
     )
     
+    function Sin(p1,p2){
+        return p1/p2
+    }
+
+    const thetaA = Sin(a,c)
+    const thetaB = Sin(b,c)
+    const thetaC = Sin(a,b)
+    
     drawCoordinateSystem(ctx, offset)
     
-    drawText(A, "A")
-    drawText(B, "B")
-    drawText(C, "C")
+    drawText("sin = a % c = "+Sin(a,c).toFixed(3), {x:-offset.x/2, y:offset.y*0.7})
+    drawText("theta:"+thetaC.toFixed(3)+" ("+ Math.round(toDeg(theta)).
+    toString().padStart(2, " ") + "°)", {x:offset.x/2, y:offset.y*0.7})
+
+    drawPoint(A,A, 15, 'black')
+    drawPoint(B,B, 15, 'black')
+    drawPoint(C,C, 15, 'black')
     
-    drawBetweenPoints(A, B)
-    drawBetweenPoints(B, C)
-    drawBetweenPoints(C, A)
+    drawLine(A, B, 'red')
+    drawText("c:"+Math.round(c), average(A,B), color.A)
+    drawLine(A, C, 'red')
+    drawText("b:"+Math.round(b), average(A,C), color.B)
+    drawLine(B, C, 'red')
+    drawText("a:"+Math.round(a), average(B,C), color.C)
+    
+    drawText("A", A)
+    drawText("B", B)
+    drawText("C", C)
+
+    // drawArch(A,C, thetaA)
+    // drawArch(A,C, thetaB)
+    // drawArch(A,B, thetaC)
+
+    ctx.begin
+
+    
+
+    // drawText("0", A)
+}
+
+function toDeg(rad){
+    return rad*180/Math.PI;
+}
+
+function average(p1, p2){
+    return {
+        x:(p1.x+p2.x)/2,
+        y:(p1.y+p2.y)/2
+    };
 }
 
 
 
-
-
-
-
-function drawText(position, letter){
-    ctx.beginPath();
-    ctx.fillStyle='black';
-    ctx.textAlign='center';
-    ctx.textBaseline='middle';
-    ctx.font="bold 13px Courier";
-    ctx.fillText(letter, position.x, position.y)
-
-//Test
-    // if (position.x === 0){
-    //     ctx.translate(100, 0)
-    // }
-    // if (position.y === 0){
-    //     ctx.translate(0, 100)
-    // }
+function distance(p1, p2){
+    return Math.hypot(p1.x-p2.x,p1.y-p2.y); 
 }
 
 function drawPoint(x,y, size, color){   
@@ -89,6 +125,7 @@ function drawPoint(x,y, size, color){
     ctx.arc(x.x, y.y, size, 0, Math.PI*2);
     ctx.fill();
 }
+
 
 function drawCoordinateSystem(ctx, offset){
     ctx.beginPath();
@@ -103,14 +140,56 @@ function drawCoordinateSystem(ctx, offset){
     ctx.setLineDash([]);
 }
 
-function drawBetweenPoints(pointFrom, pointTo){
-    ctx.beginPath()
-    ctx.moveTo(pointFrom.x, pointFrom.y)
-    ctx.lineTo(pointTo.x, pointTo.y)
-    ctx.stroke()
+
+function drawText(letter, position, color='black'){
+    ctx.beginPath();
+    ctx.fillStyle=color;
+    ctx.color='black'
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.font="bold 18px Courier";
+    ctx.strokeStyle='white';
+    ctx.lineWidth='7';
+    ctx.strokeText(letter, position.x, position.y);
+    ctx.fillText(letter, position.x, position.y);
 }
 
 
+function drawLine(pointFrom, pointTo, color){
+    ctx.beginPath()
+    ctx.moveTo(pointFrom.x, pointFrom.y)
+    ctx.lineTo(pointTo.x, pointTo.y)
+    ctx.fillStyle=color
+    ctx.lineWidth = 2
+    ctx.stroke()
+}
+
+function drawArch(pointFrom, pointTo, angle){
+    ctx.beginPath();
+    // ctx.moveTo(pointFrom.x, pointFrom.y)
+    ctx.arc(angle/2, angle/2 , angle, pointFrom, pointTo)
+    // ctx.lineTo(pointTo.x, pointTo.y)
+    ctx.pathStyle='black';
+    ctx.lineWidth = 1;
+    ctx.stroke()
+}
+
+// function drawText(position, letter){
+//     ctx.beginPath();
+//     ctx.fillStyle='black';
+//     ctx.textAlign='center';
+//     ctx.textBaseline='middle';
+//     ctx.font="bold 13px Courier";
+//     ctx.fillText(letter, position.x, position.y)
+
+// //Test
+//     // if (position.x === 0){
+//     //     ctx.translate(100, 0)
+//     // }
+//     // if (position.y === 0){
+//     //     ctx.translate(0, 100)
+//     // }
+// }
 
 //Test custom Triangle
 // ctx.beginPath();
