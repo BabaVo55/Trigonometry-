@@ -95,7 +95,17 @@ function update(){
     // drawArch(A,C, thetaB)
     // drawArch(A,B, thetaC)
 
-    ctx.begin
+    ctx.beginPath();
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = 2;
+    const start = B.x > A.x?0:Math.PI;
+    const clockwise=B.y<C.y^B.x>A.x;
+    let end = B.y < A.y? theta:theta
+    if (B.x<A.x){
+        end=Math.PI-end
+    }
+    ctx.arc(0,0,20,start,end, !clockwise)
+    ctx.stroke()
 
     
 
